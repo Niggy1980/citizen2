@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66137508951",
+    "project_id": "citizen-project-c3f92",
+    "storage_bucket": "citizen-project-c3f92.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66137508951:android:92a14c1549b731937a2712",
+        "android_client_info": {
+          "package_name": "com.example.citizen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBioU0lXgvh_0EvAs5ObWtIKVtej2g1Z0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
