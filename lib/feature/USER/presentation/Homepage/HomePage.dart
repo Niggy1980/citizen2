@@ -125,6 +125,16 @@ Future<void> _deleteProduct(String productId) async {
               controller: _CommentController,
               decoration: const InputDecoration(labelText: 'ข้อความตอบกลับ'),
             ),
+            SizedBox(height: 10,),
+            IconButton(onPressed: () async {
+
+
+              ImagePicker imagePicker=ImagePicker();
+              XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+              print("${file?.path}");
+
+
+            } , icon: const Icon(Icons.camera_alt)),
             const SizedBox(height: 25,
             ),
             ElevatedButton (
