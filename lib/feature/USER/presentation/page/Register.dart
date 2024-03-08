@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,6 +8,11 @@ import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'dart:html' as html;
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -46,17 +50,6 @@ Future Create([DocumentSnapshot? documentSnapshot]) async {
 }
 
 class _MyAppState extends State<MyApp> {
-  // File? image;
-  // Future pickImage() async {
-  //   try {
-  //     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-  //     if(image == null) return;
-  //     final imageTemp = File(image.path);
-  //     setState(() => this.image = imageTemp);
-  //   } on PlatformException catch(e) {
-  //     print('Failed to pick image: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -70,19 +63,40 @@ class Register extends StatefulWidget {
   State<Register> createState() => _RegisterState();
 }
 class _RegisterState extends State<Register> {
-  File? image;
+  Uint8List? imageBytes;
+  late File imageFile;
 
-  Future pickImage() async {
+  Future<void> pickImage() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-      if (image == null) return;
-
-      final imageTemp = File(image.path);
-
-      setState(() => this.image = imageTemp);
-    } on PlatformException catch (e) {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result == null || result.files.isEmpty) {
+        return;
+      }
+      final fileBytes = result.files.first.bytes;
+      if (fileBytes == null) {
+        return;
+      }
+      setState(() {
+        imageBytes = Uint8List.fromList(fileBytes);
+        imageFile = File.fromRawPath(imageBytes!);
+      });
+    } catch (e) {
       print('Failed to pick image: $e');
+    }
+  }
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      final dateTime = DateTime.now();
+      final blob = html.Blob([imageFile.readAsBytesSync()]);
+      final url = '${dateTime.year}${dateTime.month}${dateTime.day}/${dateTime.microsecondsSinceEpoch}.jpg';
+      final storageRef = firebase_storage.FirebaseStorage.instance.ref().child('profile/$url');
+      final uploadTask = storageRef.putBlob(blob);
+      await uploadTask.whenComplete(() => null);
+      final imageUrl = await storageRef.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
     }
   }
 
@@ -347,6 +361,20 @@ class _RegisterState extends State<Register> {
                               decoration: InputDecoration(border: OutlineInputBorder(), labelText: " Phonoenumber")),
                         ),
                       )),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        if (imageBytes != null)
+                          Image.memory(
+                            imageBytes!,
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                      ],
+                    ),
+                  )
                 ],
               ),
               SizedBox(
@@ -361,7 +389,7 @@ class _RegisterState extends State<Register> {
                       child: IconButton(
                         icon: Icon(Icons.upload,size: 100,),
                         onPressed: (){
-                      pickImage();
+                          pickImage();
                         },
                       ),
                     ),
@@ -379,7 +407,7 @@ class _RegisterState extends State<Register> {
                         style: TextStyle(color: Colors.white),
                       ),
 
-                      onPressed: () {
+                      onPressed: () async{
                         if (Confirmpassword.text != Passwordcontroller.text) {
                           AlertDialog alert = AlertDialog(
                             title: Text('Alert',
@@ -405,34 +433,42 @@ class _RegisterState extends State<Register> {
                           );
                           return;
                         } else {
-                          Create();
-                          AlertDialog alert = AlertDialog(
-                            title: Text('Success', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold,)),
-                            content: Text("Account registered"),
-                            actions: [
-                              TextButton(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (_) => LoginPage()),
-                                  );
-                                },
-                              ),
-                            ],
-                          );
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return alert;
-                            },
-                          );
+                           if (imageFile != null) {
+                             String? file1 = await uploadImage(imageFile);
+                             await Create();
+                             AlertDialog alert = AlertDialog(
+                               title: Text('Success', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold,)),
+                               content: Text("Account registered"),
+                               actions: [
+                                 TextButton(
+                                   child: Text('OK'),
+                                   onPressed: () {
+                                     Navigator.of(context).pop();
+                                     Navigator.of(context).push(
+                                       MaterialPageRoute(builder: (_) => LoginPage()),
+                                     );
+                                   },
+                                 ),
+                               ],
+                             );
+                             showDialog(
+                               context: context,
+                               builder: (BuildContext context) {
+                                 return alert;
+                               },
+                             );
+                           }else{
+                             print("where picture");
+                             print(imageFile);
+                           }
+
                           return;
                         }
                       },
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.blue,padding: EdgeInsets.only(left: 60,right: 60,bottom: 10,top: 10),),
                     ),
-                  )),
+                  )
+              ),
             ],
           )),
         ),
