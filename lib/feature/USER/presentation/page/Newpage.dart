@@ -1,27 +1,23 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class Newpage extends StatefulWidget {
-
+  const Newpage({super.key});
 
   @override
   State<Newpage> createState() => _NewpageState();
 }
 
 class _NewpageState extends State<Newpage> {
-
-
-
-
-
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+class D extends StatelessWidget {
+  const D({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child : Text('News')
-    );
+    return const Placeholder();
   }
 }
-
