@@ -2,8 +2,29 @@ import 'package:citizen/feature/USER/Function/Drawer.dart';
 import 'package:citizen/feature/USER/Function/TextBox.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
+
+final CollectionReference account = FirebaseFirestore.instance.collection('account');
+String Email ="";
+String Username ="";
+String Datebirth ="";
+String Idenityid ="";
 
 
+class Firebaseinfo extends StatefulWidget {
+  const Firebaseinfo({super.key});
+
+  @override
+  State<Firebaseinfo> createState() => _FirebaseinfoState();
+}
+
+class _FirebaseinfoState extends State<Firebaseinfo> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +34,39 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Future<void> Firebaseinfor() async {
+    try {
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('account')
+          .where('id', isEqualTo: Idcontroller.text).where('password', isEqualTo: Passwordcontroller.text).get();
+      querySnapshot.docs.forEach((doc) {
+        print('ID: ${doc.id},');
+        print('Field Value: ${doc['firstname']}');
+        print('Field Value: ${doc['datebirth']}');
+        print('Field Value: ${doc['idenityid']}');
+        if (querySnapshot.docs.isNotEmpty) {
+          QueryDocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+          Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+
+          // อัพเดทค่าตัวแปร
+          setState(() {
+            Email = data['email'];
+            Username = data['firstname'];
+            Datebirth = data['datebirth'];
+            Idenityid = data['idenityid'];
+          });
+        }
+
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+  void initState() {
+    super.initState();
+    Firebaseinfor();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 20),
           //useremail
-          Text("poonnawit@gmail.com",
+          Text(Email,
               textAlign: TextAlign.center,
               style:TextStyle(color: Colors.black)),
           const SizedBox(height: 50),
@@ -58,11 +112,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
           //username
 
-          MyTextBox(text: 'punnawit', sectionName: 'username',),
+          MyTextBox(text: Username, sectionName: 'username',),
 
-          MyTextBox(text: '25/08/02', sectionName: 'datebirthday',),
+          MyTextBox(text: Datebirth, sectionName: 'datebirthday',),
 
-          MyTextBox(text: '1206598451222', sectionName: 'idenityID',),
+          MyTextBox(text: Idenityid, sectionName: 'idenityID',),
         ],
       ),
     );

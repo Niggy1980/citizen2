@@ -13,7 +13,7 @@ class _NavBarBtState extends State<NavBarBt> {
   Widget build(BuildContext context) {
     return  Scaffold(
       bottomNavigationBar: GNav(
-        backgroundColor: Colors.blue,color:Colors.white ,activeColor: Colors.white,tabBackgroundColor: Colors.blue.shade200,
+        backgroundColor: Colors.blue,color:Colors.white,activeColor: Colors.white,tabBackgroundColor: Colors.blue.shade200,
         padding: EdgeInsets.all(16),
         tabs: const [
           GButton(icon: Icons.home,
