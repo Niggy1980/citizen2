@@ -1,13 +1,14 @@
 import 'package:citizen/feature/USER/Function/Drawer.dart';
 import 'package:citizen/feature/USER/Function/NavBarBottom.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/ProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
+import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
 
 class HomePage extends StatefulWidget {
-
   const HomePage({super.key,
 
   });
@@ -23,14 +24,42 @@ class _HomePageState extends State<HomePage> {
   final  _AddressController = TextEditingController();
   final  _CommentController = TextEditingController();
   final  complaint = FirebaseFirestore.instance.collection('complaint');
+  String Username ="";
+  String Role ="";
 
+  Future<void> Firebaseinfor() async {
+    try {
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('account')
+          .where('id', isEqualTo: Idcontroller.text).where('password', isEqualTo: Passwordcontroller.text).get();
+      querySnapshot.docs.forEach((doc) {
+        if (querySnapshot.docs.isNotEmpty) {
+          QueryDocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+          Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+          setState(() {
+            Username = data['firstname'];
+            Role = data['role'];
+
+            print(Username);
+            print(Role);
+          });
+        }
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+  void initState() {
+    super.initState();
+    Firebaseinfor();
+  }
 
   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot])async{
     String action = 'create';
     if(documentSnapshot != null){
       action = 'update';
       _TitleController.text = documentSnapshot['title'];
-      _NameController.text = documentSnapshot['name'];
+      Username = documentSnapshot['name'];
       _AddressController.text = documentSnapshot['address'];
       _CommentController.text = documentSnapshot['comment'];
     }
@@ -46,10 +75,6 @@ class _HomePageState extends State<HomePage> {
                 TextField(
                   controller: _TitleController,
                   decoration: const InputDecoration(labelText: 'ชื่อเรื่องร้องเรียน'),
-                ),
-                TextField(
-                  controller: _NameController,
-                  decoration: const InputDecoration(labelText: 'ชื่อผู้ร้องเรียน'),
                 ),
                 TextField(
                   controller: _AddressController,
@@ -73,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                     child: Text(action == 'create' ? 'Create' : 'Update'),
                     onPressed: () async {
                 final String? title = _TitleController.text;
-                final String? name = _NameController.text;
+                final String? name = Username;
                 final String? address = _AddressController.text;
                 final String? comment = _CommentController.text;
                 if (title !=null && name !=null && address !=null ){
@@ -202,28 +227,31 @@ Future<void> _deleteProduct(String productId) async {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(documentSnapshot['title'],
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight
-                              .bold),),
-                        Text(documentSnapshot['name']),
-                        Text(documentSnapshot['address']),
-
-
+                        Row(children: [
+                          Container(
+                              child: Icon(Icons.person, size: 43,),
+                            ),
+                            Container(
+                              child: Text(documentSnapshot['name'],style: TextStyle(fontWeight: FontWeight.bold),),
+                            )
+                          ],
+                        ),
+                        Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
+                        Container(child: Text(documentSnapshot['address'])),
                         SizedBox(height: 10,),
                         Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            IconButton(icon:const Icon(Icons.comment),
-                              onPressed: ()=> _comment(documentSnapshot),),
+                            Visibility(child: IconButton(icon:const Icon(Icons.comment),
+                              onPressed: ()=> _comment(documentSnapshot),
+                            ),visible:(Role == 'Admin'),),
                             IconButton(icon:const Icon(Icons.edit),
                               onPressed: ()=> _createOrUpdate(documentSnapshot),),
                             IconButton(icon:const Icon(Icons.delete),
                               onPressed: ()=> _deleteProduct(documentSnapshot.id),),
                           ],
                         ),
-
                         ),
                         SizedBox(height: 10,),
-
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[300],

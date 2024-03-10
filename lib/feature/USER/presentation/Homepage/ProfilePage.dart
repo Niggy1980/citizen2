@@ -47,13 +47,12 @@ class _ProfilePageState extends State<ProfilePage> {
         if (querySnapshot.docs.isNotEmpty) {
           QueryDocumentSnapshot documentSnapshot = querySnapshot.docs.first;
           Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
-
-          // อัพเดทค่าตัวแปร
           setState(() {
             Email = data['email'];
             Username = data['firstname'];
             Datebirth = data['datebirth'];
             Idenityid = data['idenityid'];
+            // print(Username);
           });
         }
 
@@ -91,23 +90,17 @@ class _ProfilePageState extends State<ProfilePage> {
       body: ListView(
         children: [
           const SizedBox(height: 50),
-          //profilepic
           const Icon(
             Icons.person,
             size: 120,
           ),
           const SizedBox(height: 20),
-          //useremail
           Text(Email,
               textAlign: TextAlign.center,
               style:TextStyle(color: Colors.black)),
           const SizedBox(height: 50),
-          //userdetail
           Padding(padding: const EdgeInsets.only(left: 25.0),
-            child: Text(
-              'Mydetail',
-              style: TextStyle(color:Colors.black ),
-            ) ,
+            child: Text('Mydetail', style: TextStyle(color:Colors.black ),) ,
           ),
 
           //username
