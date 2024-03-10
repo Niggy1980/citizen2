@@ -10,7 +10,7 @@ String Email ="";
 String Username ="";
 String Datebirth ="";
 String Idenityid ="";
-
+String Phonenum ="";
 
 class Firebaseinfo extends StatefulWidget {
   const Firebaseinfo({super.key});
@@ -52,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Username = data['firstname'];
             Datebirth = data['datebirth'];
             Idenityid = data['idenityid'];
+            Phonenum = data['phonenumber'];
             // print(Username);
           });
         }
@@ -87,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Center (child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
-      body: ListView(
+      body: Column(
         children: [
           const SizedBox(height: 50),
           const Icon(
@@ -95,21 +96,23 @@ class _ProfilePageState extends State<ProfilePage> {
             size: 120,
           ),
           const SizedBox(height: 20),
-          Text(Email,
+          Text(Username,
               textAlign: TextAlign.center,
-              style:TextStyle(color: Colors.black)),
+              style:TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold)),
           const SizedBox(height: 50),
           Padding(padding: const EdgeInsets.only(left: 25.0),
-            child: Text('Mydetail', style: TextStyle(color:Colors.black ),) ,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child:Text('Mydetail', style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),),
+            ),
           ),
-
-          //username
-
-          MyTextBox(text: Username, sectionName: 'username',),
+          MyTextBox(text: Email, sectionName: 'e-mail',),
 
           MyTextBox(text: Datebirth, sectionName: 'datebirthday',),
 
           MyTextBox(text: Idenityid, sectionName: 'idenityID',),
+
+          MyTextBox(text: Phonenum, sectionName: 'phonenumber',),
         ],
       ),
     );

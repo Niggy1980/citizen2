@@ -124,11 +124,41 @@ class _HomePageState extends State<HomePage> {
     });
   }
   //delete
-Future<void> _deleteProduct(String productId) async {
-    await complaint.doc(productId).delete();
+  Future<void> _deleteProduct(String productId) async {
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        'Alert',
+        style: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Text('Do you want to delete this complaint?'),
+      actions: [
+        TextButton(
+          child: Text('OK'),
+          onPressed: () async {
+            Navigator.of(context).pop();
+            await complaint.doc(productId).delete();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ลบเรียบร้อยเเล้ว')));
+          },
+        ),
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ลบเรียบร้อยเเล้ว')));
-}
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
 //comment
   Future<void> _comment([DocumentSnapshot? documentSnapshot])async{
@@ -236,8 +266,21 @@ Future<void> _deleteProduct(String productId) async {
                             )
                           ],
                         ),
-                        Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
-                        Container(child: Text(documentSnapshot['address'])),
+                        Row(
+                          children: [
+                            Container(
+                              child: Text("หัวข้อ: ",style: TextStyle(color: Colors.blue),),
+                            ),
+                            Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(child: Text("สถานที่: ",style: TextStyle(color: Colors.blue,),),
+                            ),
+                            Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+                          ],
+                        ),
                         SizedBox(height: 10,),
                         Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -256,7 +299,7 @@ Future<void> _deleteProduct(String productId) async {
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                           ),
-                          margin: const EdgeInsets.only(bottom: 10),
+                          margin: const EdgeInsets.only(left: 20,right: 20),
                           padding: EdgeInsets.only(left: 50,right: 50,top: 20),
                           child: Column(
                             children: [
