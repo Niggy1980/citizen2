@@ -14,7 +14,12 @@ class NewsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
+        title: Center(
+            child:Container(
+              child: Image(
+                image: AssetImage ('assets/image/citizenicon.png'),width: 50,),
+            )
+        ),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
       drawer: MyDrawer(),

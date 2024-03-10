@@ -162,7 +162,6 @@ Future<void> _deleteProduct(String productId) async {
       );
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
