@@ -24,20 +24,20 @@ class _FaqPageState extends State<FaqPage> {
     return(ExpansionPanelList(
       expansionCallback: (panelIndex, isExpanded) {
         setState(() {
-          if(panelIndex ==0){
+          if(panelIndex == 0){
             f1 = isExpanded;
           }
-          if(panelIndex ==1){
-            f2=  isExpanded;
+          if(panelIndex == 1){
+            f2 = isExpanded;
           }
-          if(panelIndex ==2){
-            f3=  isExpanded;
+          if(panelIndex == 2){
+            f3 = isExpanded;
           }
-          if(panelIndex ==3){
-            f4=  isExpanded;
+          if(panelIndex == 3){
+            f4 = isExpanded;
           }
-          if(panelIndex ==4){
-            f5=  isExpanded;
+          if(panelIndex == 4){
+            f5 = isExpanded;
           }
         });
       },
@@ -77,18 +77,15 @@ class _FaqPageState extends State<FaqPage> {
         }, body: ListTile
           (title: Text("โดยปกติปัญหาที่ถูกร้องเรียนมานั้นขึ้นอยู่กับหลายปัจจัยส่วนใหญ่ปัญหาจะถูกเเก้ไขตั้งเเต่ 2 สัปดาห์ถึง 8 สัปดาห์ หลังการร้องเรียน",style: TextStyle(color: Colors.grey[600])),
         )),
-
       ],
-
     ));
   }
   @override
   Widget build(BuildContext context) {
-    return (MaterialApp(
-      debugShowCheckedModeBanner: false,
-        home:Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Center(child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
+      appBar: AppBar(title: Center(child: Image(
+        image: AssetImage('assets/image/citizenicon.png'), width: 50,)),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
       drawer: MyDrawer(),
@@ -98,17 +95,24 @@ class _FaqPageState extends State<FaqPage> {
         activeColor: Colors.white,
         tabBackgroundColor: Color.fromRGBO(219, 226, 239, 100),
         padding: EdgeInsets.all(16),
-        tabs:  [
-          GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},) ,
-          GButton (icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.notifications_active, text: 'Notification',onPressed:(){ Navigator.pushNamed(context,'/notipage');},),
+        tabs: [
+          GButton(icon: Icons.home, text: 'Home', onPressed: () {
+            Navigator.pushNamed(context, '/homepage');
+          },),
+          GButton(icon: Icons.newspaper, text: 'News', onPressed: () {
+            Navigator.pushNamed(context, '/newspage');
+          },),
+          GButton(icon: Icons.notifications_active,
+            text: 'Notification',
+            onPressed: () {
+              Navigator.pushNamed(context, '/notipage');
+            },),
         ],
       ),
       body: Column(
         children: [
-        getpanelList()
-      ],),
-    ),
-    ));
+          getpanelList()
+        ],),
+    );
   }
 }
