@@ -13,7 +13,7 @@ class MyTextBox extends StatelessWidget {
       decoration: BoxDecoration(color: Colors.grey[300],
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: EdgeInsets.only(left: 15,bottom: 15,top: 10),
+      padding: EdgeInsets.only(left: 15,bottom: 15,top: 6),
       margin: EdgeInsets.only(left: 20,right: 20,top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
