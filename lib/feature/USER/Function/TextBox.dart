@@ -13,7 +13,7 @@ class MyTextBox extends StatelessWidget {
       decoration: BoxDecoration(color: Colors.grey[300],
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: EdgeInsets.only(left: 15,bottom: 15),
+      padding: EdgeInsets.only(left: 15,bottom: 15,top: 6),
       margin: EdgeInsets.only(left: 20,right: 20,top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,15 +25,6 @@ class MyTextBox extends StatelessWidget {
             children: [
               Text(sectionName,
                 style: TextStyle(color: Colors.grey[500]),
-              ),
-
-
-              //edit button
-              IconButton(onPressed:() {},
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.grey[400],
-                ),
               ),
             ],
           ),

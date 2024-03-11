@@ -257,6 +257,7 @@ class _HomePageState extends State<HomePage> {
                             )
                           ],
                         ),
+                        SizedBox(height: 5,),
                         Row(
                           children: [
                             Container(
@@ -265,11 +266,12 @@ class _HomePageState extends State<HomePage> {
                             Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
                           ],
                         ),
+                        SizedBox(height: 3,),
                         Row(
                           children: [
                             Container(child: Text("สถานที่: ",style: TextStyle(color: Colors.blue,),),
                             ),
-                            Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+                            Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey[500]),)),
                           ],
                         ),
                         SizedBox(height: 10,),
@@ -291,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.grey[300],
                           ),
                           margin: const EdgeInsets.only(left: 20,right: 20),
-                          padding: EdgeInsets.only(left: 50,right: 50,top: 20),
+                          padding: EdgeInsets.only(left: 50,right: 50,top: 5),
                           child: Column(
                             children: [
                               Center(child: Text(documentSnapshot['comment'],textAlign: TextAlign.center,))
