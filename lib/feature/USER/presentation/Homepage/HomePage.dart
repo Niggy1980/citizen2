@@ -9,9 +9,7 @@ import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
 import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key,
-
-  });
+  const HomePage({super.key,});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -26,7 +24,6 @@ class _HomePageState extends State<HomePage> {
   final  complaint = FirebaseFirestore.instance.collection('complaint');
   String Username ="";
   String Role ="";
-
   Future<void> Firebaseinfor() async {
     try {
 
@@ -83,13 +80,9 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: 10,),
                 //image
                 IconButton(onPressed: () async {
-
-
                   ImagePicker imagePicker=ImagePicker();
                   XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
                   print("${file?.path}");
-
-
                 } , icon: const Icon(Icons.camera_alt)),
 
                 const SizedBox(height: 25,
@@ -115,8 +108,7 @@ class _HomePageState extends State<HomePage> {
                   _AddressController.text='';
                   Navigator.of(context).pop();
                 }
-                    },
-
+                },
                 )
               ],
             ),
@@ -229,12 +221,11 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
         color: Colors.white,
         activeColor: Colors.white,
-        tabBackgroundColor: Color.fromRGBO(219, 226, 239, 100),
         padding: EdgeInsets.all(16),
         tabs:  [
           GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
           GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.notifications_active, text: 'Notification',onPressed:(){ Navigator.pushNamed(context,'/notipage');},),
+          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
         ],
       ),
       body: StreamBuilder(

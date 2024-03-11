@@ -23,15 +23,6 @@ class MyDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.face, color: Colors.white,),
-                title:  Text("P R O F I L E"),
-                textColor: Colors.white,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/profilepage');
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.question_mark_sharp, color: Colors.white,),
                 title: Text("F Y Q"),
                 textColor: Colors.white,

@@ -93,20 +93,11 @@ class _FaqPageState extends State<FaqPage> {
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
         color: Colors.white,
         activeColor: Colors.white,
-        tabBackgroundColor: Color.fromRGBO(219, 226, 239, 100),
         padding: EdgeInsets.all(16),
-        tabs: [
-          GButton(icon: Icons.home, text: 'Home', onPressed: () {
-            Navigator.pushNamed(context, '/homepage');
-          },),
-          GButton(icon: Icons.newspaper, text: 'News', onPressed: () {
-            Navigator.pushNamed(context, '/newspage');
-          },),
-          GButton(icon: Icons.notifications_active,
-            text: 'Notification',
-            onPressed: () {
-              Navigator.pushNamed(context, '/notipage');
-            },),
+        tabs:  [
+          GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
+          GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
+          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
         ],
       ),
       body: Column(

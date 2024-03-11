@@ -22,7 +22,6 @@ class _NavBarBtState extends State<NavBarBt> {
                   text:'News'),
           GButton(icon: Icons.person,
                   text:'Profile'),
-
         ],
       ),
     );
