@@ -10,7 +10,7 @@ String Email ="";
 String Username ="";
 String Datebirth ="";
 String Idenityid ="";
-
+String Phonenum ="";
 
 class Firebaseinfo extends StatefulWidget {
   const Firebaseinfo({super.key});
@@ -47,16 +47,15 @@ class _ProfilePageState extends State<ProfilePage> {
         if (querySnapshot.docs.isNotEmpty) {
           QueryDocumentSnapshot documentSnapshot = querySnapshot.docs.first;
           Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
-
-          // อัพเดทค่าตัวแปร
           setState(() {
             Email = data['email'];
             Username = data['firstname'];
             Datebirth = data['datebirth'];
             Idenityid = data['idenityid'];
+            Phonenum = data['phonenumber'];
+            // print(Username);
           });
         }
-
       });
     } catch (e) {
       print('Error fetching data: $e');
@@ -76,47 +75,42 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
         color: Colors.white,
         activeColor: Colors.white,
-        tabBackgroundColor: Color.fromRGBO(219, 226, 239, 100),
         padding: EdgeInsets.all(16),
         tabs:  [
           GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
           GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.notifications_active, text: 'Notification',onPressed:(){ Navigator.pushNamed(context,'/notipage');},),
+          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
         ],
       ),
       appBar: AppBar(
         title: Center (child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
-      body: ListView(
+      body: Column(
         children: [
           const SizedBox(height: 50),
-          //profilepic
           const Icon(
             Icons.person,
             size: 120,
           ),
           const SizedBox(height: 20),
-          //useremail
-          Text(Email,
+          Text(Username,
               textAlign: TextAlign.center,
-              style:TextStyle(color: Colors.black)),
+              style:TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold)),
           const SizedBox(height: 50),
-          //userdetail
           Padding(padding: const EdgeInsets.only(left: 25.0),
-            child: Text(
-              'Mydetail',
-              style: TextStyle(color:Colors.black ),
-            ) ,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child:Text('Mydetail', style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),),
+            ),
           ),
-
-          //username
-
-          MyTextBox(text: Username, sectionName: 'username',),
+          MyTextBox(text: Email, sectionName: 'e-mail',),
 
           MyTextBox(text: Datebirth, sectionName: 'datebirthday',),
 
           MyTextBox(text: Idenityid, sectionName: 'idenityID',),
+
+          MyTextBox(text: Phonenum, sectionName: 'phonenumber',),
         ],
       ),
     );

@@ -1,16 +1,15 @@
 import 'package:citizen/feature/USER/Function/Drawer.dart';
 import 'package:citizen/feature/USER/Function/NavBarBottom.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/ProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
+import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
 
 class HomePage extends StatefulWidget {
-
-  const HomePage({super.key,
-
-  });
+  const HomePage({super.key,});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -23,14 +22,41 @@ class _HomePageState extends State<HomePage> {
   final  _AddressController = TextEditingController();
   final  _CommentController = TextEditingController();
   final  complaint = FirebaseFirestore.instance.collection('complaint');
+  String Username ="";
+  String Role ="";
+  Future<void> Firebaseinfor() async {
+    try {
 
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('account')
+          .where('id', isEqualTo: Idcontroller.text).where('password', isEqualTo: Passwordcontroller.text).get();
+      querySnapshot.docs.forEach((doc) {
+        if (querySnapshot.docs.isNotEmpty) {
+          QueryDocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+          Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+          setState(() {
+            Username = data['firstname'];
+            Role = data['role'];
+
+            print(Username);
+            print(Role);
+          });
+        }
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+  void initState() {
+    super.initState();
+    Firebaseinfor();
+  }
 
   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot])async{
     String action = 'create';
     if(documentSnapshot != null){
       action = 'update';
       _TitleController.text = documentSnapshot['title'];
-      _NameController.text = documentSnapshot['name'];
+      Username = documentSnapshot['name'];
       _AddressController.text = documentSnapshot['address'];
       _CommentController.text = documentSnapshot['comment'];
     }
@@ -48,23 +74,15 @@ class _HomePageState extends State<HomePage> {
                   decoration: const InputDecoration(labelText: 'ชื่อเรื่องร้องเรียน'),
                 ),
                 TextField(
-                  controller: _NameController,
-                  decoration: const InputDecoration(labelText: 'ชื่อผู้ร้องเรียน'),
-                ),
-                TextField(
                   controller: _AddressController,
                   decoration: const InputDecoration(labelText: 'รายละเอียดสถานที่'),
                 ),
                 SizedBox(height: 10,),
                 //image
                 IconButton(onPressed: () async {
-
-
                   ImagePicker imagePicker=ImagePicker();
                   XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
                   print("${file?.path}");
-
-
                 } , icon: const Icon(Icons.camera_alt)),
 
                 const SizedBox(height: 25,
@@ -73,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     child: Text(action == 'create' ? 'Create' : 'Update'),
                     onPressed: () async {
                 final String? title = _TitleController.text;
-                final String? name = _NameController.text;
+                final String? name = Username;
                 final String? address = _AddressController.text;
                 final String? comment = _CommentController.text;
                 if (title !=null && name !=null && address !=null ){
@@ -90,8 +108,7 @@ class _HomePageState extends State<HomePage> {
                   _AddressController.text='';
                   Navigator.of(context).pop();
                 }
-                    },
-
+                },
                 )
               ],
             ),
@@ -99,11 +116,41 @@ class _HomePageState extends State<HomePage> {
     });
   }
   //delete
-Future<void> _deleteProduct(String productId) async {
-    await complaint.doc(productId).delete();
+  Future<void> _deleteProduct(String productId) async {
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        'Alert',
+        style: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Text('Do you want to delete this complaint?'),
+      actions: [
+        TextButton(
+          child: Text('OK'),
+          onPressed: () async {
+            Navigator.of(context).pop();
+            await complaint.doc(productId).delete();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ลบเรียบร้อยเเล้ว')));
+          },
+        ),
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ลบเรียบร้อยเเล้ว')));
-}
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
 //comment
   Future<void> _comment([DocumentSnapshot? documentSnapshot])async{
@@ -174,12 +221,11 @@ Future<void> _deleteProduct(String productId) async {
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
         color: Colors.white,
         activeColor: Colors.white,
-        tabBackgroundColor: Color.fromRGBO(219, 226, 239, 100),
         padding: EdgeInsets.all(16),
         tabs:  [
           GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
           GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.notifications_active, text: 'Notification',onPressed:(){ Navigator.pushNamed(context,'/notipage');},),
+          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
         ],
       ),
       body: StreamBuilder(
@@ -202,34 +248,52 @@ Future<void> _deleteProduct(String productId) async {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(documentSnapshot['title'],
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight
-                              .bold),),
-                        Text(documentSnapshot['name']),
-                        Text(documentSnapshot['address']),
-
-
+                        Row(children: [
+                          Container(
+                              child: Icon(Icons.person, size: 43,),
+                            ),
+                            Container(
+                              child: Text(documentSnapshot['name'],style: TextStyle(fontWeight: FontWeight.bold),),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Container(
+                              child: Text("หัวข้อ: ",style: TextStyle(color: Colors.blue),),
+                            ),
+                            Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
+                          ],
+                        ),
+                        SizedBox(height: 3,),
+                        Row(
+                          children: [
+                            Container(child: Text("สถานที่: ",style: TextStyle(color: Colors.blue,),),
+                            ),
+                            Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey[500]),)),
+                          ],
+                        ),
                         SizedBox(height: 10,),
                         Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            IconButton(icon:const Icon(Icons.comment),
-                              onPressed: ()=> _comment(documentSnapshot),),
+                            Visibility(child: IconButton(icon:const Icon(Icons.comment),
+                              onPressed: ()=> _comment(documentSnapshot),
+                            ),visible:(Role == 'Admin'),),
                             IconButton(icon:const Icon(Icons.edit),
                               onPressed: ()=> _createOrUpdate(documentSnapshot),),
                             IconButton(icon:const Icon(Icons.delete),
                               onPressed: ()=> _deleteProduct(documentSnapshot.id),),
                           ],
                         ),
-
                         ),
                         SizedBox(height: 10,),
-
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                           ),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: EdgeInsets.only(left: 50,right: 50,top: 20),
+                          margin: const EdgeInsets.only(left: 20,right: 20),
+                          padding: EdgeInsets.only(left: 50,right: 50,top: 5),
                           child: Column(
                             children: [
                               Center(child: Text(documentSnapshot['comment'],textAlign: TextAlign.center,))

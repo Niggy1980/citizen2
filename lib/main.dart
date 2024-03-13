@@ -47,7 +47,8 @@ class MyApp extends StatelessWidget {
           '/loginpage' : (context) => LoginPage(),
           '/notipage': (context) => NotiPage(),
           '/faqpage':(context) => FaqPage(),
-          '/contactpage':(contaxt) => ContactPage(),
+          '/contactpage':(context) => ContactPage(),
+          '/FAQpage':(context) => FaqPage()
 
         }
 

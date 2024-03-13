@@ -142,7 +142,7 @@ class LoginPage extends StatelessWidget {
                                     (Route<dynamic> route) => false,
                               );
                             } else {
-                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainAdminPage()),
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage()),
                                     (Route<dynamic> route) => false,
                               );
                             }
