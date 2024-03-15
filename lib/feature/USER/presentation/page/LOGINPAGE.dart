@@ -195,8 +195,11 @@ class LoginPage extends StatelessWidget {
                     Container(
                       child: TextButton(
                         onPressed: () {
+                          Idcontroller.clear();
+                          Passwordcontroller.clear();
                           Navigator.of(context).push(
                             MaterialPageRoute(builder: (_) => Register()),
+
                           );
                         },
                         child: Text("register"),

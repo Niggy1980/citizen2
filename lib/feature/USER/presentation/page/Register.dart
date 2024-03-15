@@ -20,6 +20,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
 final formkey = GlobalKey<FormState>();
 final Idcontroller = TextEditingController();
 final Confirmpassword = TextEditingController();
@@ -32,7 +33,6 @@ final IdenityIDcontroller = TextEditingController();
 final Firstnamecontroller = TextEditingController();
 final Lastnamecontroller = TextEditingController();
 final CollectionReference account = FirebaseFirestore.instance.collection('account');
-
 
 Future Create([DocumentSnapshot? documentSnapshot]) async {
   await account.add({
@@ -50,7 +50,6 @@ Future Create([DocumentSnapshot? documentSnapshot]) async {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
@@ -62,9 +61,11 @@ class Register extends StatefulWidget {
   @override
   State<Register> createState() => _RegisterState();
 }
+
 class _RegisterState extends State<Register> {
   Uint8List? imageBytes;
   late File imageFile;
+
 
   Future<void> pickImage() async {
     try {
@@ -84,21 +85,25 @@ class _RegisterState extends State<Register> {
       print('Failed to pick image: $e');
     }
   }
-  Future<String?> uploadImage(File imageFile) async {
+  Future<String> uploadFile(File file) async {
     try {
-      final dateTime = DateTime.now();
-      final blob = html.Blob([imageFile.readAsBytesSync()]);
-      final url = '${dateTime.year}${dateTime.month}${dateTime.day}/${dateTime.microsecondsSinceEpoch}.jpg';
-      final storageRef = firebase_storage.FirebaseStorage.instance.ref().child('profile/$url');
-      final uploadTask = storageRef.putBlob(blob);
-      await uploadTask.whenComplete(() => null);
-      final imageUrl = await storageRef.getDownloadURL();
-      return imageUrl;
+      // สร้าง reference ใหม่ใน Firebase Storage
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref().child('profile').child('image1.jpg'); // ชื่อของไฟล์ที่จะเก็บใน Storage
+
+      // ทำการอัปโหลดไฟล์
+      await ref.putFile(file);
+
+      // ดึง URL ของไฟล์ที่อัปโหลดมา
+      String downloadURL = await ref.getDownloadURL();
+
+      return downloadURL; // ส่งกลับ URL ของไฟล์ที่อัปโหลดแล้ว
     } catch (e) {
-      print('Error uploading image: $e');
-      return null;
+      print('Failed to upload image: $e');
+      return ''; // ในกรณีที่เกิดข้อผิดพลาดในการอัปโหลด
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +119,10 @@ class _RegisterState extends State<Register> {
               ),
               Container(
                 child: Center(
-                  child: Text("let's create your account",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
+                  child: Text(
+                    "let's create your account",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  ),
                 ),
               ),
               SizedBox(
@@ -124,298 +132,322 @@ class _RegisterState extends State<Register> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    child: Icon(Icons.account_circle, color: Colors.blue,size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Form(
-                          key: formkey,
-                          child: SizedBox(
-                            width: 350,
-                            height: 50,
-                            child: TextFormField(
-                              controller: Idcontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(),labelText: " ID"),
-                              validator: (id){
-                                if(id!.isEmpty || !RegExp(r'^[a-z A-Z+$]').hasMatch(id)){
-                                  return "Enter correct name";
-                                }else{
-                                  return null;
-                                }
-                              },),
-                          ),
-                        ),
-                      )
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Icon(Icons.lock, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              obscureText: true,
-                              controller: Passwordcontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(), labelText: "Password")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child:  Icon(Icons.lock, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              obscureText: true,
-                              controller: Confirmpassword,
-                              decoration: InputDecoration(border: OutlineInputBorder(),labelText: " Confirm password")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      child:  Icon(Icons.person, color: Colors.blue, size: 40,)
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(width: 350, height: 50,
-                          child: TextFormField(
-                              controller: Firstnamecontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(), labelText: " Firstname")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Icon(Icons.person, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              controller: Lastnamecontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(),labelText: " Lastname")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Icon(Icons.credit_card_outlined, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              controller: IdenityIDcontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(), labelText: " Idenity ID")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child:  Icon(Icons.date_range, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              controller: Datebirthcontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(), labelText: " Date of birth (DD/MM/YYYY)",
-                              )),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Icon(Icons.mail_outline, color: Colors.blue, size: 40,),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              controller: Emailcontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(),labelText: " E-mail")),
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      child: Icon(Icons.phone, color: Colors.blue, size: 40,)
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 350,
-                          height: 50,
-                          child: TextFormField(
-                              controller: Phonenumebercontroller,
-                              decoration: InputDecoration(border: OutlineInputBorder(), labelText: " Phonoenumber")),
-                        ),
-                      )),
-                  Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        if (imageBytes != null)
-                          Image.memory(
-                            imageBytes!,
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
-                          ),
-                      ],
+                    child: Icon(
+                      Icons.account_circle,
+                      color: Colors.blue,
+                      size: 40,
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: Form(
+                      key: formkey,
+                      child: SizedBox(
+                        width: 350,
+                        height: 50,
+                        child: TextFormField(
+                          controller: Idcontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(), labelText: " ID"),
+                        ),
+                      ),
+                    ),
+                  )),
                 ],
               ),
               SizedBox(
                 height: 10,
               ),
-              Container(
-                  child: Align(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.lock,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
                     alignment: Alignment.center,
                     child: SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: IconButton(
-                        icon: Icon(Icons.upload,size: 100,),
-                        onPressed: (){
-                          pickImage();
-                        },
-                      ),
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          obscureText: true,
+                          controller: Passwordcontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Password")),
                     ),
-                  )
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.lock,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          obscureText: true,
+                          controller: Confirmpassword,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " Confirm password")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      child: Icon(
+                    Icons.person,
+                    color: Colors.blue,
+                    size: 40,
+                  )),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: Firstnamecontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " Firstname")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: Lastnamecontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " Lastname")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.credit_card_outlined,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: IdenityIDcontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " Idenity ID")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.date_range,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: Datebirthcontroller,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Date of birth (DD/MM/YYYY)",
+                          )),
+                    ),
+                   )
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Icon(
+                      Icons.mail_outline,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: Emailcontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " E-mail")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      child: Icon(
+                    Icons.phone,
+                    color: Colors.blue,
+                    size: 40,
+                  )),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      // decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 350,
+                      height: 50,
+                      child: TextFormField(
+                          controller: Phonenumebercontroller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: " Phonoenumber")),
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
               ),
               SizedBox(
                 height: 10,
               ),
               Container(
                   child: Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      child: Text(
-                        "Register",
-                        style: TextStyle(color: Colors.white),
-                      ),
-
-                      onPressed: () async{
-                        if (Confirmpassword.text != Passwordcontroller.text) {
-                          AlertDialog alert = AlertDialog(
-                            title: Text('Alert',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                            content: Text("Passwords doesn't match"),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: Text(
+                    "Register",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    if (Idcontroller.text.length < 6 ||
+                        !Idcontroller.text.contains(RegExp(r'[A-Z]'))) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Alert',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content:
+                                Text('ID must be 6 character and 1 uppercase.'),
                             actions: [
                               TextButton(
                                 child: Text('OK'),
@@ -425,50 +457,187 @@ class _RegisterState extends State<Register> {
                               ),
                             ],
                           );
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return alert;
+                        },
+                      );
+                      return;
+                    }
+                    if (Confirmpassword.text != Passwordcontroller.text) {
+                      AlertDialog alert = AlertDialog(
+                        title: Text('Alert',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        content: Text("Passwords doesn't match"),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
                             },
+                          ),
+                        ],
+                      );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
+                      return;
+                    }
+                    if (!Emailcontroller.text.contains('@')) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Alert',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text("Invalid email format."),
+                            actions: [
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
                           );
-                          return;
-                        } else {
-                           if (imageFile != null) {
-                             String? file1 = await uploadImage(imageFile);
-                             await Create();
-                             AlertDialog alert = AlertDialog(
-                               title: Text('Success', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold,)),
-                               content: Text("Account registered"),
-                               actions: [
-                                 TextButton(
-                                   child: Text('OK'),
-                                   onPressed: () {
-                                     Navigator.of(context).pop();
-                                     Navigator.of(context).push(
-                                       MaterialPageRoute(builder: (_) => LoginPage()),
-                                     );
-                                   },
-                                 ),
-                               ],
-                             );
-                             showDialog(
-                               context: context,
-                               builder: (BuildContext context) {
-                                 return alert;
-                               },
-                             );
-                           }else{
-                             print("where picture");
-                             print(imageFile);
-                           }
-
-                          return;
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue,padding: EdgeInsets.only(left: 60,right: 60,bottom: 10,top: 10),),
-                    ),
-                  )
-              ),
+                        },
+                      );
+                      return;
+                    }
+                    if (IdenityIDcontroller.text.length != 13 ||
+                        !IdenityIDcontroller.text
+                            .contains(RegExp(r'^[0-9]+$'))) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Alert',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text(
+                                'Identity ID must be 13 digit and only number.'),
+                            actions: [
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      return;
+                    }
+                    if (!Emailcontroller.text.contains('@')) {
+                      AlertDialog alert = AlertDialog(
+                        title: Text('Alert',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        content: Text("E-mail must contain '@'"),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
+                      return;
+                    }
+                    if (Phonenumebercontroller.text.length != 10 ||
+                        !Phonenumebercontroller.text
+                            .contains(RegExp(r'^[0-9]+$'))) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Alert',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content:
+                                Text('Identity ID must be 13 and only number.'),
+                            actions: [
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      return;
+                    } else {
+                      AlertDialog alert = AlertDialog(
+                        title: Text('Account',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        content: Text("success registered"),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () async{
+                              Navigator.of(context).pop();
+                              await Create();
+                              Idcontroller.clear();
+                              Passwordcontroller.clear();
+                              Confirmpassword.clear();
+                              Firstnamecontroller.clear();
+                              Lastnamecontroller.clear();
+                              IdenityIDcontroller.clear();
+                              Datebirthcontroller.clear();
+                              Emailcontroller.clear();
+                              Phonenumebercontroller.clear();
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => LoginPage()),);
+                            },
+                          ),
+                        ],
+                      );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
+                      return;
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.only(
+                        left: 60, right: 60, bottom: 10, top: 10),
+                  ),
+                ),
+              )),
             ],
           )),
         ),
