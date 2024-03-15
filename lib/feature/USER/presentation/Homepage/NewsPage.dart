@@ -19,8 +19,6 @@ class _NewsPageState extends State<NewsPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-
-
       body: Container(
         child: Card(
           child: Icon(Icons.ice_skating),
