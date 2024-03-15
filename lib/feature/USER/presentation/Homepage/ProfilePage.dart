@@ -36,7 +36,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   Future<void> Firebaseinfor() async {
     try {
-
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('account')
           .where('id', isEqualTo: Idcontroller.text).where('password', isEqualTo: Passwordcontroller.text).get();
       querySnapshot.docs.forEach((doc) {
@@ -70,6 +69,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(title: Center(child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
+        backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
+      ),
       drawer: MyDrawer(),
       body: Container(
         child: Column(
