@@ -70,48 +70,34 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: MyDrawer(),
-      bottomNavigationBar: GNav(
-        backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
-        color: Colors.white,
-        activeColor: Colors.white,
-        padding: EdgeInsets.all(16),
-        tabs:  [
-          GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
-          GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
-        ],
-      ),
-      appBar: AppBar(
-        title: Center (child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
-        backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 50),
-          const Icon(
-            Icons.person,
-            size: 120,
-          ),
-          const SizedBox(height: 20),
-          Text(Username,
-              textAlign: TextAlign.center,
-              style:TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold)),
-          const SizedBox(height: 50),
-          Padding(padding: const EdgeInsets.only(left: 25.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child:Text('Mydetail', style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),),
+      body: Container(
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            const Icon(
+              Icons.person,
+              size: 120,
             ),
-          ),
-          MyTextBox(text: Email, sectionName: 'e-mail',),
+            const SizedBox(height: 20),
+            Text(Username,
+                textAlign: TextAlign.center,
+                style:TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold)),
+            const SizedBox(height: 50),
+            Padding(padding: const EdgeInsets.only(left: 25.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child:Text('Mydetail', style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),),
+              ),
+            ),
+            MyTextBox(text: Email, sectionName: 'e-mail',),
 
-          MyTextBox(text: Datebirth, sectionName: 'datebirthday',),
+            MyTextBox(text: Datebirth, sectionName: 'datebirthday',),
 
-          MyTextBox(text: Idenityid, sectionName: 'idenityID',),
+            MyTextBox(text: Idenityid, sectionName: 'idenityID',),
 
-          MyTextBox(text: Phonenum, sectionName: 'phonenumber',),
-        ],
+            MyTextBox(text: Phonenum, sectionName: 'phonenumber',),
+          ],
+        ),
       ),
     );
   }

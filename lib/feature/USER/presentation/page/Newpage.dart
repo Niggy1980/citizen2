@@ -6,6 +6,7 @@ final CollectionReference account = FirebaseFirestore.instance.collection('image
 class News extends StatelessWidget {
   const News({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

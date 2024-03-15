@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/HomePage.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/ProfilePage.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/NewsPage.dart';
 
 class NavBarBt extends StatefulWidget {
   const NavBarBt({super.key});
@@ -8,22 +11,29 @@ class NavBarBt extends StatefulWidget {
   State<NavBarBt> createState() => _NavBarBtState();
 }
 
+int MyIndex = 0;
+List pages = [HomePage(),NewsPage(),ProfilePage()];
+
+
 class _NavBarBtState extends State<NavBarBt> {
   @override
   Widget build(BuildContext context) {
+    Widget bottomNavbar = BottomNavigationBar(
+      currentIndex: MyIndex,
+      onTap: (int index){
+        setState(() {
+          MyIndex = index;
+        });
+      },
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.home_filled)),
+        BottomNavigationBarItem(icon: Icon(Icons.newspaper)),
+        BottomNavigationBarItem(icon: Icon(Icons.account_circle))
+      ]);
+
     return  Scaffold(
-      bottomNavigationBar: GNav(
-        backgroundColor: Colors.blue,color:Colors.white,activeColor: Colors.white,tabBackgroundColor: Colors.blue.shade200,
-        padding: EdgeInsets.all(16),
-        tabs: const [
-          GButton(icon: Icons.home,
-                  text:'Home'),
-          GButton(icon: Icons.newspaper,
-                  text:'News'),
-          GButton(icon: Icons.person,
-                  text:'Profile'),
-        ],
-      ),
+      body: pages[MyIndex],
+      bottomNavigationBar: bottomNavbar,
     );
   }
 }
