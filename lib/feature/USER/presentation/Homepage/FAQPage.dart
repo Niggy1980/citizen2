@@ -94,10 +94,10 @@ class _FaqPageState extends State<FaqPage> {
         color: Colors.white,
         activeColor: Colors.white,
         padding: EdgeInsets.all(16),
-        tabs:  [
-          GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
-          GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
+        tabs: const  [
+          GButton(icon: Icons.home, text: 'Home'),
+          GButton(icon: Icons.newspaper, text: 'News'),
+          GButton(icon: Icons.account_circle, text: 'Profile'),
         ],
       ),
       body: Column(

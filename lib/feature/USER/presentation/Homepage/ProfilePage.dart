@@ -70,6 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: MyDrawer(),
       body: Container(
         child: Column(
           children: [

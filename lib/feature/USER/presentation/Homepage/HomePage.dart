@@ -261,15 +261,14 @@ String ImageUrl = " ";
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: Center(child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
       drawer: MyDrawer(),
-      
-      body: StreamBuilder(
+      body:
+      StreamBuilder(
           stream: complaint.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshort) {
             if (streamSnapshort.hasData) {
@@ -330,7 +329,7 @@ String ImageUrl = " ";
                               ],
                             ),
                           ),
-                          
+
                           SizedBox(height: 10,),
                           Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -361,13 +360,14 @@ String ImageUrl = " ";
 
                           ),
 
+
                         ],
                       ),
                     );
+
                   }
 
               );
-
 
             }
             return const Center(

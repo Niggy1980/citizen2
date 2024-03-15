@@ -1,6 +1,9 @@
 import 'dart:js';
+import 'package:citizen/feature/USER/Function/NavBarBottom.dart';
 import 'package:citizen/feature/USER/presentation/Homepage/HomePage.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/NewsPage.dart';
 import 'package:citizen/feature/USER/presentation/page/AdminPAGE.dart';
+import 'package:citizen/feature/USER/presentation/page/Newpage.dart';
 import 'package:citizen/feature/USER/presentation/page/Register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -138,11 +141,11 @@ class LoginPage extends StatelessWidget {
                             String Role = data['role'];
                             print('id: $ID,password: $Password, role: $Role');
                             if (Role == 'user') {
-                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage()),
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => NavBarBt()),
                                     (Route<dynamic> route) => false,
                               );
                             } else {
-                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage()),
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => NavBarBt()),
                                     (Route<dynamic> route) => false,
                               );
                             }
