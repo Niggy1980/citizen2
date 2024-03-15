@@ -28,14 +28,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  file_picker: ^6.2.0
+  file_picker: ^4.4.0
   flutter:
     sdk: flutter
-  firebase_core: ^2.25.4
+  firebase_core:
   intl: ^0.17.0
   fluttertoast: ^8.0.7
-  cloud_firestore: ^4.15.7
-  firebase_storage: ^11.6.7
+  cloud_firestore:
+  firebase_storage:
   image_picker_web: ^3.1.1
 
 
@@ -43,7 +43,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   google_nav_bar: ^5.0.6
-  image_picker: ^1.0.7
+  image_picker:
 
 dev_dependencies:
   flutter_test:

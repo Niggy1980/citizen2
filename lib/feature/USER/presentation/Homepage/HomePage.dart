@@ -1,12 +1,22 @@
+
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:html' as html;
+import 'package:flutter/services.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:citizen/feature/USER/Function/Drawer.dart';
 import 'package:citizen/feature/USER/Function/NavBarBottom.dart';
+import 'package:citizen/feature/USER/presentation/Homepage/NewsPage.dart';
 import 'package:citizen/feature/USER/presentation/Homepage/ProfilePage.dart';
+import 'package:citizen/feature/USER/presentation/page/Newpage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
-import 'package:citizen/feature/USER/presentation/page/LOGINPAGE.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key,});
@@ -16,11 +26,48 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Uint8List? imageBytes;
+  late File imageFile;
+
+  Future<void> pickImage() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result == null || result.files.isEmpty) {
+        return;
+      }
+      final fileBytes = result.files.first.bytes;
+      if (fileBytes == null) {
+        return;
+      }
+      setState(() {
+        imageBytes = Uint8List.fromList(fileBytes);
+        imageFile = File.fromRawPath(imageBytes!);
+      });
+    } catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      final dateTime = DateTime.now();
+      final blob = html.Blob([imageFile.readAsBytesSync()]);
+      final url = '${dateTime.year}${dateTime.month}${dateTime.day}/${dateTime.microsecondsSinceEpoch}.jpg';
+      final storageRef = firebase_storage.FirebaseStorage.instance.ref().child('profile/$url');
+      final uploadTask = storageRef.putBlob(blob);
+      await uploadTask.whenComplete(() => null);
+      final imageUrl = await storageRef.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
 
   final  _TitleController = TextEditingController();
   final  _NameController = TextEditingController();
   final  _AddressController = TextEditingController();
   final  _CommentController = TextEditingController();
+  final _ImageUrlController = TextEditingController();
   final  complaint = FirebaseFirestore.instance.collection('complaint');
   String Username ="";
   String Role ="";
@@ -51,6 +98,8 @@ class _HomePageState extends State<HomePage> {
     Firebaseinfor();
   }
 
+String ImageUrl = " ";
+
   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot])async{
     String action = 'create';
     if(documentSnapshot != null){
@@ -59,6 +108,8 @@ class _HomePageState extends State<HomePage> {
       Username = documentSnapshot['name'];
       _AddressController.text = documentSnapshot['address'];
       _CommentController.text = documentSnapshot['comment'];
+      _ImageUrlController.text = documentSnapshot['image'];
+
     }
     await showModalBottomSheet(
         isScrollControlled: true,
@@ -79,11 +130,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 10,),
                 //image
-                IconButton(onPressed: () async {
-                  ImagePicker imagePicker=ImagePicker();
-                  XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-                  print("${file?.path}");
-                } , icon: const Icon(Icons.camera_alt)),
+              IconButton(onPressed: () {
+                pickImage();
+              }, icon: Icon(Icons.camera_alt)),
 
                 const SizedBox(height: 25,
                 ),
@@ -94,9 +143,10 @@ class _HomePageState extends State<HomePage> {
                 final String? name = Username;
                 final String? address = _AddressController.text;
                 final String? comment = _CommentController.text;
+                final ImageUrl = _ImageUrlController.text;
                 if (title !=null && name !=null && address !=null ){
                   if (action == 'create'){
-                    await complaint.add({"title":title,"name":name,"address":address,"comment":comment});
+                    await complaint.add({"title":title,"name":name,"address":address,"comment":comment,"image":ImageUrl});
                   }
                   if (action == 'update'){
                     await complaint
@@ -175,7 +225,6 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 10,),
             IconButton(onPressed: () async {
 
-
               ImagePicker imagePicker=ImagePicker();
               XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
               print("${file?.path}");
@@ -209,109 +258,125 @@ class _HomePageState extends State<HomePage> {
       );
     });
   }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: Center(child:Image(image: AssetImage ('assets/image/citizenicon.png'),width: 50,)),
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
       ),
       drawer: MyDrawer(),
-      bottomNavigationBar: GNav(
-        backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
-        color: Colors.white,
-        activeColor: Colors.white,
-        padding: EdgeInsets.all(16),
-        tabs:  [
-          GButton(icon: Icons.home, text: 'Home',onPressed:(){ Navigator.pushNamed(context,'/homepage');},),
-          GButton(icon: Icons.newspaper, text: 'News',onPressed:(){ Navigator.pushNamed(context,'/newspage');},),
-          GButton(icon: Icons.account_circle, text: 'Profile',onPressed:(){ Navigator.pushNamed(context,'/profilepage');},),
-        ],
-      ),
+      
       body: StreamBuilder(
-        stream: complaint.snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshort) {
-          if (streamSnapshort.hasData) {
-            return ListView.builder(
-                itemCount: streamSnapshort.data!.docs.length,
-                itemBuilder: (context, index) {
-                  final DocumentSnapshot documentSnapshot = streamSnapshort
-                      .data!.docs[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    margin: EdgeInsets.only(top: 25, left: 25, right: 25),
-                    padding: EdgeInsets.all(25),
-                    child:
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Container(
-                              child: Icon(Icons.person, size: 43,),
-                            ),
+          stream: complaint.snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshort) {
+            if (streamSnapshort.hasData) {
+              return ListView.builder(
+                  itemCount: streamSnapshort.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    final DocumentSnapshot documentSnapshot = streamSnapshort
+                        .data!.docs[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+                      padding: EdgeInsets.all(25),
+                      child:
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(children: [
                             Container(
-                              child: Text(documentSnapshot['name'],style: TextStyle(fontWeight: FontWeight.bold),),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Container(
-                              child: Text("หัวข้อ: ",style: TextStyle(color: Colors.blue),),
-                            ),
-                            Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
-                          ],
-                        ),
-                        SizedBox(height: 3,),
-                        Row(
-                          children: [
-                            Container(child: Text("สถานที่: ",style: TextStyle(color: Colors.blue,),),
-                            ),
-                            Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey[500]),)),
-                          ],
-                        ),
-                        SizedBox(height: 10,),
-                        Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Visibility(child: IconButton(icon:const Icon(Icons.comment),
-                              onPressed: ()=> _comment(documentSnapshot),
-                            ),visible:(Role == 'Admin'),),
-                            IconButton(icon:const Icon(Icons.edit),
-                              onPressed: ()=> _createOrUpdate(documentSnapshot),),
-                            IconButton(icon:const Icon(Icons.delete),
-                              onPressed: ()=> _deleteProduct(documentSnapshot.id),),
-                          ],
-                        ),
-                        ),
-                        SizedBox(height: 10,),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                          ),
-                          margin: const EdgeInsets.only(left: 20,right: 20),
-                          padding: EdgeInsets.only(left: 50,right: 50,top: 5),
-                          child: Column(
-                            children: [
-                              Center(child: Text(documentSnapshot['comment'],textAlign: TextAlign.center,))
+                                child: Icon(Icons.person, size: 43,),
+                              ),
+                              Container(
+                                child: Text(documentSnapshot['name'],style: TextStyle(fontWeight: FontWeight.bold),),
+                              )
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-            );
+                          SizedBox(height: 5,),
+                          Row(
+                            children: [
+                              Container(
+                                child: Text("หัวข้อ: ",style: TextStyle(color: Colors.blue),),
+                              ),
+                              Container(child: Text(documentSnapshot['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
+                            ],
+                          ),
+                          SizedBox(height: 3,),
+                          Row(
+                            children: [
+                              Container(child: Text("สถานที่: ",style: TextStyle(color: Colors.blue,),),
+                              ),
+                              Container(child: Text(documentSnapshot['address'],style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey[500]),)),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (imageBytes != null)
+                                  Image.memory(
+                                    imageBytes!,
+                                    height: 300,
+                                    width: 400,
+                                    fit: BoxFit.cover,
+                                  ),
+                              ],
+                            ),
+                          ),
+                          
+                          SizedBox(height: 10,),
+                          Container( child: Row( mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Visibility(child: IconButton(icon:const Icon(Icons.comment),
+                                onPressed: ()=> _comment(documentSnapshot),
+                              ),visible:(Role == 'Admin'),),
+                              IconButton(icon:const Icon(Icons.edit),
+                                onPressed: ()=> _createOrUpdate(documentSnapshot),),
+                              IconButton(icon:const Icon(Icons.delete),
+                                onPressed: ()=> _deleteProduct(documentSnapshot.id),),
+                            ],
+                          ),
 
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
+                          ),
+
+                          SizedBox(height: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                            ),
+                            margin: const EdgeInsets.only(left: 20,right: 20),
+                            padding: EdgeInsets.only(left: 50,right: 50,top: 5),
+                            child: Column(
+                              children: [
+                                Center(child: Text(documentSnapshot['comment'],textAlign: TextAlign.center,))
+                              ],
+                            ),
+
+                          ),
+
+                        ],
+                      ),
+                    );
+                  }
+
+              );
+
+
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+
+
       //add new
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(68, 117, 182, 1.0),
